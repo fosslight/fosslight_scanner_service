@@ -1,0 +1,9 @@
+beautifulsoup4
+lxml
+xlrd==1.2.0
+fosslight_scanner
+Flask-Mail
+flask
+celery
+redis
+ray

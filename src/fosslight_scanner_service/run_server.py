@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 LG Electronics Inc.
-# SPDX-License-Identifier: LicenseRef-LGE-Proprietary
+# SPDX-License-Identifier: Apache-2.0
 import os
-import json
-from flask import Flask , request, render_template, make_response
+from flask import Flask, request, render_template, make_response
 from flask_mail import Mail, Message
 from flask import send_file
 from pathlib import Path
 from werkzeug.utils import secure_filename
-from parsing_license_txt import run_main_func
+from cli import run_main_func
 from celery import Celery
 import logging
 
@@ -22,13 +21,13 @@ _OUTPUT_DIR_NAME = "output"
 _RESULT_URL_PREFIX = "http://"+_SERVER_IP+":"+str(_SERVER_PORT)+"/download?"
 _RESULT_URL_SUFFIX_DEV = "dev=ok&"
 _RETURN_OK = 200
-_RETURN_NOK = 500 # Internal server error
+_RETURN_NOK = 500  # Internal server error
 _LOCK_FILE_SUFFIX = "_analyze.lock"
 
 logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
-app.config['MAIL_SERVER']=_SERVER_IP
+app.config['MAIL_SERVER'] = _SERVER_IP
 app.config['MAIL_PORT'] = 25
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = False
@@ -49,18 +48,19 @@ def send_mail(title, contents, mail_receiver=[]):
         if mail_receiver != "":
             mail_to_list.extend(mail_receiver)
     except Exception as error:
-        logger.error("SEND MAIL "+str(error))
-        
-    msg = Message(title, sender = 'no-reply@fosslight.com', recipients = mail_to_list)
+        logger.error("SEND MAIL " + str(error))
+
+    msg = Message(title, sender='no-reply@fosslight.com', recipients=mail_to_list)
     msg.body = contents
     mail.send(msg)
 
 
 def make_tree(path):
     tree = dict(name=os.path.basename(path), children=[])
-    try: lst = os.listdir(path)
+    try:
+        lst = os.listdir(path)
     except OSError:
-        pass #ignore errors
+        pass  # ignore errors
     else:
         for name in lst:
             fn = os.path.join(path, name)
@@ -80,10 +80,9 @@ def find_result_file(prj_id, dev_mode=False):
         exists = True
         return exists, ""
     for file in os.listdir(out_dir):
-        if file.endswith('.xlsx') and file.startswith(str(prj_id)+"_result_"):
+        if file == str(prj_id) + ".xlsx":
             exists = True
             return exists, file
-    
     return exists, ""
 
 
@@ -96,14 +95,14 @@ def call_parsing_function(prj_id, email_list=[]):
         result_url = _RESULT_URL_PREFIX
 
         try:
-            print("* CALL_"+str(prj_id)+ ", PATH:"+root_path)
+            print("* CALL_" + str(prj_id) + ", PATH:" + root_path)
             success, msg = run_main_func(prj_id, root_path, _OUTPUT_DIR_NAME, result_url)
         except Exception as error:
             success = False
             msg = str(error)
-            print("* ERROR_"+str(prj_id)+ ","+msg)
-    
-        print("* RESULT_"+str(prj_id)+ ", success:"+str(success)+","+msg)
+            print("* ERROR_" + str(prj_id) + "," + msg)
+
+        print("* RESULT_" + str(prj_id) + ", success:" + str(success) + "," + msg)
         mail_contents = "[Project ID:" + str(prj_id) + "] " + msg
         mail_title = "[FOSSLight][PRJ-" + str(prj_id) + "] Scan Result:" + str(success)
 
@@ -115,14 +114,13 @@ def call_parsing_function(prj_id, email_list=[]):
 def run_scanning():
     email_list = []
     pid = request.args.get('pid')
-    dev = request.args.get('dev')
-    email =  request.args.get('email')
-    dev_mode = dev == "ok"
+    email = request.args.get('email')
+
     if email != "" and email is not None:
         email_list = email.split(",")
     if pid != "" and pid is not None:
-        logger.warning("RUN >"+str(pid)+",email:"+str(email_list)+",dev:"+str(dev_mode))
-        task = call_parsing_function.delay(pid, dev_mode, email_list)
+        logger.warning("RUN >"+str(pid)+",email:"+str(email_list))
+        call_parsing_function.delay(pid, email_list)
     else:
         return make_response("nok", _RETURN_NOK)
     return make_response("ok", _RETURN_OK)
@@ -143,7 +141,7 @@ def check_status():
     if exists:
         if file_name == "":
             return_msg = "PROGRESS"
-        else : 
+        else:
             result_url = _RESULT_URL_PREFIX
             if dev_mode:
                 result_url += _RESULT_URL_SUFFIX_DEV
@@ -160,7 +158,7 @@ def board_view(article_idx):
 
 
 # 위에 있는것이 Endpoint 역활을 해줍니다.
-@app.route('/boards',defaults={'page':'index'})
+@app.route('/boards', defaults={'page': 'index'})
 @app.route('/boards/<page>')
 def boards(page):
     return page+"페이지입니다."
@@ -183,8 +181,7 @@ def upload_ui():
 def file_upload():
     data = request.form
     pid = data.get('pid')
-    dev = data.get('dev')
-    dev_mode = dev == "ok"
+
     if pid == "" or pid is None:
         logger.warning("NEED pid "+str(data))
         return make_response("nok", _RETURN_NOK)
@@ -214,7 +211,7 @@ def file_upload():
     return make_response("ok", _RETURN_OK)
 
 
-# http://{ip}:5001/download?download_file=0_NOTICE.html
+# http://{ip}:5001/download?download_file=PROJECT_ID.xlsx
 @app.route("/download")
 def download_file():
     file_path = _ROOT_PATH

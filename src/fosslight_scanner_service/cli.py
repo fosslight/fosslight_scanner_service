@@ -9,22 +9,35 @@ from logging import handlers
 import logging
 import shutil
 from datetime import datetime
-from fosslight_scanner.fosslight_scanner import main as fl_scanner_main
 from fosslight_scanner.fosslight_scanner import run_analysis, set_sub_parameter
-
-
-def run_main_func(link="", prj="TEST_ID", output_dir=""):
-    cw_path = os.getcwd
-    run_analysis(cw_path,
-                 set_sub_parameter(["Scan",
-                                    "-w", link,
-                                    "-o", output_dir], ),
-                 fl_scanner_main, "FOSSLight Scan Analysis")
+from fosslight_scanner.fosslight_scanner import main as fl_scanner_main
 
 
 
+logger = logging.getLogger(__name__)
 
-def main():  # FOR COMMAND LINE
+
+def run_main_func(link="", prj="", output_dir=""):
+    success = False
+    msg = ""
+
+    if link == "":
+        success = False
+        msg = "Enter the link to download the source."
+    else:
+        prj_dir = os.path.join(output_dir, prj)
+        try:
+            run_analysis(prj_dir,
+                    set_sub_parameter(["Scan",
+                                        "-w", link,
+                                        "-o", prj_dir], ),
+                    fl_scanner_main, "FOSSLight Scan Analysis")
+        except Exception as ex:
+            logger.error(str(ex))
+    return success, msg
+
+
+def main():
     argv = sys.argv[1:]
     try:
         opts, args = getopt.getopt(argv, 'hi:w:o:')
@@ -43,10 +56,10 @@ def main():  # FOR COMMAND LINE
             project_id = str(arg)
         elif opt == "-w":
             link = arg
-        elif opt == "-n":
+        elif opt == "-o":
             output_dir = arg
 
-    run_main_func(project_id, output_dir)
+    success, msg = run_main_func(link, project_id, output_dir)
 
 
 if __name__ == '__main__':

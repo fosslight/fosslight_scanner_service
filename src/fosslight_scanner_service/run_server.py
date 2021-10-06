@@ -82,16 +82,18 @@ def call_parsing_function(prj_id, link, email_list=[]):
         success = True
 
         try:
-            print("* CALL_" + str(prj_id) + ", LINK:" + link)
-            success, msg = run_main_func(link, prj_id, OUTPUT_DIR_NAME)
+            prj_id = str(prj_id)
+            link = str(link)
+            print("* CALL_" + prj_id + ", LINK:" + link)
+            success, msg = run_main_func(link, prj_id, os.path.join(ROOT_PATH, OUTPUT_DIR_NAME))
         except Exception as error:
             success = False
             msg = str(error)
-            print("* ERROR_" + str(prj_id) + "," + msg)
+            print("* ERROR_" + prj_id + "," + msg)
 
-        print("* RESULT_" + str(prj_id) + ", success:" + str(success) + "," + msg)
-        mail_contents = "[Project ID:" + str(prj_id) + "] " + msg
-        mail_title = "[FOSSLight][PRJ-" + str(prj_id) + "] Scan Result:" + str(success)
+        print("* RESULT_" + prj_id + ", success:" + str(success) + "," + msg)
+        mail_contents = "[Project ID:" + prj_id + "] " + msg
+        mail_title = "[FOSSLight][PRJ-" + prj_id + "] Scan Result:" + str(success)
 
         send_mail(mail_title, mail_contents, email_list)
         return

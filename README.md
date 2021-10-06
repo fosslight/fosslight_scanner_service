@@ -56,7 +56,7 @@ curl -X POST {IP}:5001/fileupload -F file=@/home/test/FOSSLight-Report.xlsx -F '
 
 3. Start to run scanning
 ```
-http://{IP}:5001/run_fosslight?pid=35&link=https://github.com/LGE-OSS/example&email=soim.kim@lge.com,gildong.hong@lge.com
+http://{IP}:5001/run_fosslight?pid=35&link=https://github.com/LGE-OSS/example&email=abc@gmail.com,helloworld@gmail.com
 ```
 
 4. Download result file

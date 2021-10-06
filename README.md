@@ -16,9 +16,9 @@ $ redis-server
 
 3. Update variables in src/fosslight_scanner_service/config.py
 ```
-SERVER_IP = "10.177.222.142"
+SERVER_IP = "127.0.0.1"
 SERVER_PORT = 5001
-ROOT = "/home/soimkim/git/fosslight_scanner_service/tests"
+ROOT = "/home/test"
 ```
 
 ### Setup
@@ -27,10 +27,7 @@ Run on Python 3.6+.
 $ sudo apt-get install python-dev
 $ sudo apt-get install python3-setuptools
 $ python3 -m pip install --upgrade pip setuptools wheel
-$ pip3 install fosslight_source
-$ virtualenv -p /usr/bin/python3.6 venv
-$ source venv/bin/activate
-(venv)$ pip3 install -r requirements.txt
+$ pip3 install -r requirements.txt
 ```
 
 ### Run the server

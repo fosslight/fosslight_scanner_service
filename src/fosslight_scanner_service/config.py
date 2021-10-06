@@ -24,8 +24,8 @@ class Config(object):
     UPLOAD_EXTENSIONS = ['.log', '.xlsx', '.html']
     MAX_CONTENT_LENGTH = 1000 * 1024 * 1024
 
-    CELERY_BROKER_URL = 'redis://'+SERVER_IP+':6379'
-    CELERY_RESULT_BACKEND = 'redis://'+SERVER_IP+':6379'
+    CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+    CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
 
 
 class ProductionConfig(Config):

@@ -31,7 +31,8 @@ def run_main_func(link="", prj="", output_dir=""):
             Path(output_dir).mkdir(parents=True, exist_ok=True)
             run_analysis(output_dir, ["Scan",
                                       "-w", link,
-                                      "-o", output],
+                                      "-o", output,
+                                      "-t"],
                          fl_scanner_main, "FOSSLight Analysis",
                          output_dir, os.getcwd())
             success = True

@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 from cli import run_main_func
 from celery import Celery
 import logging
+import requests
 
 logger = logging.getLogger(__name__)
 app = Flask(__name__)
@@ -26,10 +27,21 @@ MAIL_SENDER = app.config['MAIL_SENDER']
 RESULT_URL_PREFIX = app.config['RESULT_URL_PREFIX']
 RETURN_OK = app.config['RETURN_OK']
 RETURN_NOK = app.config['RETURN_NOK']
+FL_HUB_TOKEN = app.config['FL_HUB_TOKEN']
+FL_HUB_REGISTER_URL = app.config['FL_HUB_REGISTER_URL']
 
 mail = Mail(app)
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
+
+
+def register_report_to_fosslight(prj_id, report_file):
+    if prj_id != "" and os.path.isfile(report_file):
+        url = FL_HUB_REGISTER_URL + prj_id
+        files = {'ossReport': open(report_file, 'rb')}
+        obj = {"token": FL_HUB_TOKEN}
+        res = requests.post(url, files=files, data=obj)
+        print("Response of uploading file: " + str(res.content))
 
 
 def send_mail(title, contents, mail_receiver=[]):
@@ -80,20 +92,26 @@ def call_parsing_function(prj_id, link, email_list=[]):
     with app.app_context():
         msg = ""
         success = True
-
+        output_dir = os.path.join(ROOT_PATH, OUTPUT_DIR_NAME)
         try:
             prj_id = str(prj_id)
             link = str(link)
             print("* CALL_" + prj_id + ", LINK:" + link)
-            success, msg = run_main_func(link, prj_id, os.path.join(ROOT_PATH, OUTPUT_DIR_NAME))
+            success, msg = run_main_func(link, prj_id, output_dir)
         except Exception as error:
             success = False
             msg = str(error)
             print("* ERROR_" + prj_id + "," + msg)
+        try:
+            register_report_to_fosslight(prj_id, os.path.join(output_dir, prj_id + ".xlsx"))
+        except Exception as error:
+            success = False
+            msg = str(error)
+            print("* ERROR_TO_UPLOAD" + prj_id + "," + msg)
 
         print("* RESULT_" + prj_id + ", success:" + str(success) + "," + msg)
-        mail_contents = "[Project ID:" + prj_id + "] " + msg
-        mail_title = "[FOSSLight][PRJ-" + prj_id + "] Scan Result:" + str(success)
+        mail_contents = "[Self-Check ID:" + prj_id + "] " + msg
+        mail_title = "[FOSSLight][Self-Check-" + prj_id + "] Scan Result:" + str(success)
 
         send_mail(mail_title, mail_contents, email_list)
         return

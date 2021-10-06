@@ -1,7 +1,7 @@
 beautifulsoup4
 lxml
 xlrd==1.2.0
-fosslight_scanner>=1.6.2
+fosslight_scanner>=1.6.3
 Flask-Mail
 flask
 celery

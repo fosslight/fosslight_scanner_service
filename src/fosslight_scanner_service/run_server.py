@@ -39,7 +39,7 @@ def register_report_to_fosslight(prj_id, report_file):
     if prj_id != "" and os.path.isfile(report_file):
         url = FL_HUB_REGISTER_URL + prj_id
         files = {'ossReport': open(report_file, 'rb')}
-        obj = {"token": FL_HUB_TOKEN}
+        obj = {"_token": FL_HUB_TOKEN}
         res = requests.post(url, files=files, data=obj)
         print("Response of uploading file: " + str(res.content))
 

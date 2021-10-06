@@ -1,6 +1,5 @@
 # FOSSLight Scanner Service [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
-
-Web service to call **[FOSSLight Scanner][s]** with url.
+**[Experimental]** Web service to call **[FOSSLight Scanner][s]** with url.
 
 [s]: https://github.com/fosslight/fosslight_scanner
 

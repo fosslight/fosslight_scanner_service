@@ -1,5 +1,10 @@
-# FOSSLight Scanner Service
-## How to run the server
+# FOSSLight Scanner Service [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
+
+Web service to call **[FOSSLight Scanner][s]** with url.
+
+[s]: https://github.com/fosslight/fosslight_scanner
+
+## 🚀 How to run
 ### Prerequisite
 1. Add server ip to the mail server
 ```
@@ -64,3 +69,15 @@ http://{IP}:5001/run_fosslight?pid=35&link=https://github.com/LGE-OSS/example&em
 http://{IP}:5001/download?download_file=35_result_2021-05-24_15-50-12.xlsx
 ```
 
+## 👏 How to report issue
+
+Please report any ideas or bugs to improve by creating an issue in [fosslight_scanner service repository][cl].    
+Then there will be quick bug fixes and upgrades. Ideas to improve are always welcome.
+
+[cl]: https://github.com/fosslight/fosslight_scanner_service/issues
+
+## 📄 License
+
+FOSSLight Scanner Service is released under [Apache-2.0][l].
+
+[l]: https://github.com/fosslight/fosslight_scanner_service/blob/main/LICENSE

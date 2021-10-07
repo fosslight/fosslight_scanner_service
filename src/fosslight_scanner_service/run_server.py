@@ -12,6 +12,7 @@ from cli import run_main_func
 from celery import Celery
 import logging
 import requests
+import json
 
 logger = logging.getLogger(__name__)
 app = Flask(__name__)
@@ -36,12 +37,22 @@ celery.conf.update(app.config)
 
 
 def register_report_to_fosslight(prj_id, report_file):
+    success = False
+    result_str = ""
     if prj_id != "" and os.path.isfile(report_file):
-        url = FL_HUB_REGISTER_URL + prj_id
-        files = {'ossReport': open(report_file, 'rb')}
-        obj = {"_token": FL_HUB_TOKEN}
-        res = requests.post(url, files=files, data=obj)
-        print("Response of uploading file: " + str(res.content))
+        try:
+            url = FL_HUB_REGISTER_URL + prj_id
+            files = {'ossReport': open(report_file, 'rb')}
+            obj = {"_token": FL_HUB_TOKEN}
+            r = requests.post(url, files=files, data=obj)
+            res = r.json()
+            success = res["success"]
+            result_str = "Response of uploading file: " + str(res)
+        except Exception as error:
+            success = False
+            result_str = "Error _ register report " + str(error)
+            logger.error(result_str)
+    return success, result_str
 
 
 def send_mail(title, contents, mail_receiver=[]):
@@ -92,6 +103,7 @@ def call_parsing_function(prj_id, link, email_list=[]):
     with app.app_context():
         msg = ""
         success = True
+        success_api = False
         output_dir = os.path.join(ROOT_PATH, OUTPUT_DIR_NAME)
         try:
             prj_id = str(prj_id)
@@ -103,15 +115,17 @@ def call_parsing_function(prj_id, link, email_list=[]):
             msg = str(error)
             print("* ERROR_" + prj_id + "," + msg)
         try:
-            register_report_to_fosslight(prj_id, os.path.join(output_dir, prj_id + ".xlsx"))
+            if success:
+                success_api, msg = register_report_to_fosslight(prj_id, os.path.join(output_dir, prj_id + ".xlsx"))
         except Exception as error:
             success = False
             msg = str(error)
             print("* ERROR_TO_UPLOAD" + prj_id + "," + msg)
 
-        print("* RESULT_" + prj_id + ", success:" + str(success) + "," + msg)
-        mail_contents = "[Self-Check ID:" + prj_id + "] " + msg
-        mail_title = "[FOSSLight][Self-Check-" + prj_id + "] Scan Result:" + str(success)
+        final_success = success and success_api
+        print(f"* RESULT_{prj_id},analyze:{success},upload:{success_api},msg:{msg}")
+        mail_contents = f"[Self-Check ID:{prj_id}]{msg}{os.linesep}-- Scan Result:{success}{os.linesep}-- Upload Result:{success_api}"
+        mail_title = f"[FOSSLight][Self-Check-{prj_id}] Result:{final_success}"
 
         send_mail(mail_title, mail_contents, email_list)
         return

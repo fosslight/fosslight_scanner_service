@@ -13,6 +13,7 @@ from celery import Celery
 import logging
 import requests
 import json
+from requests.structures import CaseInsensitiveDict
 
 logger = logging.getLogger(__name__)
 app = Flask(__name__)
@@ -41,17 +42,28 @@ def register_report_to_fosslight(prj_id, report_file):
     result_str = ""
     if prj_id != "" and os.path.isfile(report_file):
         try:
-            url = FL_HUB_REGISTER_URL + prj_id
-            files = {'ossReport': open(report_file, 'rb')}
-            obj = {"_token": FL_HUB_TOKEN}
-            r = requests.post(url, files=files, data=obj)
-            res = r.json()
+            url = FL_HUB_REGISTER_URL +"?prjId=" + prj_id
+
+            headers = CaseInsensitiveDict()
+            headers["accept"] = "application/json"
+            headers["_token"] = FL_HUB_TOKEN
+
+            files = {
+                'ossReport': (os.path.basename(report_file), open(report_file, 'rb'), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            }
+
+            resp = requests.post(url, headers=headers, files=files)
+            res = resp.json()
             success = res["success"]
             result_str = "Response of uploading file: " + str(res)
         except Exception as error:
             success = False
-            result_str = "Error _ register report " + str(error)
-            logger.error(result_str)
+            result_str = "Error_Response of uploading file:" + str(error)
+    else:
+        result_str = "Can't find project id or report file to send."
+
+    print(result_str)
+
     return success, result_str
 
 
@@ -116,7 +128,7 @@ def call_parsing_function(prj_id, link, email_list=[]):
             print("* ERROR_" + prj_id + "," + msg)
         try:
             if success:
-                success_api, msg = register_report_to_fosslight(prj_id, os.path.join(output_dir, prj_id + ".xlsx"))
+                success_api, msg = register_report_to_fosslight(prj_id, os.path.join(output_dir, prj_id+".xlsx"))
         except Exception as error:
             success = False
             msg = str(error)

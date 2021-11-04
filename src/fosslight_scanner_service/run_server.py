@@ -72,12 +72,11 @@ def send_mail(title, contents, mail_receiver=[]):
     try:
         if mail_receiver != "":
             mail_to_list.extend(mail_receiver)
+        msg = Message(title, sender=MAIL_SENDER, recipients=mail_to_list)
+        msg.body = contents
+        mail.send(msg)
     except Exception as error:
-        logger.error("SEND MAIL " + str(error))
-
-    msg = Message(title, sender=MAIL_SENDER, recipients=mail_to_list)
-    msg.body = contents
-    mail.send(msg)
+        print(f"SEND MAIL :{error}")
 
 
 def make_tree(path):

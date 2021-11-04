@@ -34,6 +34,14 @@ $ python3 -m pip install --upgrade pip setuptools wheel
 $ pip3 install -r requirements.txt
 ```
 
+### Run the mail server
+```
+$ wget https://raw.githubusercontent.com/docker-mailserver/docker-mailserver/v10.0.0/setup.sh
+$ chmod a+x setup.sh
+$ ./setup.sh email add {email_address}
+$ docker-compose up -d mail
+```
+
 ### Run the server
 ```
 $ cd src/fosslight_scanner_service

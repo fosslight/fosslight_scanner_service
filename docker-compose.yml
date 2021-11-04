@@ -1,0 +1,36 @@
+# Copyright (c) 2021 LG Electronics Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+version: "0.1"
+services:
+    mail:
+      image: mailserver/docker-mailserver:10
+      container_name: fl_scanner_mail
+      hostname: mail
+      domainname: fosslight.org
+      ports:
+        - "25:25"
+        - "587:587"
+      expose:
+        - "25"
+        - "587"
+      volumes:
+        - ./mail/maildata/:/var/mail
+        - ./mail/mailstate/:/var/mail-state
+        - ./mail/maillogs/:/var/log/mail
+        - ./mail/config/:/tmp/docker-mailserver/
+      environment:
+        - ENABLE_SRS=1
+        - PERMIT_DOCKER=network
+        - ENABLE_SPAMASSASSIN=1
+        - SPAMASSASSIN_SPAM_TO_INBOX=1
+        - ENABLE_CLAMAV=0
+        - ENABLE_FAIL2BAN=1
+        - ENABLE_POSTGREY=1
+        - ENABLE_SASLAUTHD=0
+        - ONE_DIR=1
+        - DMS_DEBUG=0
+      cap_add:
+        - NET_ADMIN
+        - SYS_PTRACE
+      restart: always

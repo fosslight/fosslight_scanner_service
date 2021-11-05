@@ -55,10 +55,10 @@ def register_report_to_fosslight(prj_id, report_file):
             resp = requests.post(url, headers=headers, files=files)
             res = resp.json()
             success = res["success"]
-            result_str = "Response of uploading file: " + str(res)
+            result_str = f'Response of uploading file: {res}'
         except Exception as error:
             success = False
-            result_str = "Error_Response of uploading file:" + str(error)
+            result_str = f'Error_Response of uploading file: {error}'
     else:
         result_str = "Can't find project id or report file to send."
 
@@ -75,8 +75,9 @@ def send_mail(title, contents, mail_receiver=[]):
         msg = Message(title, sender=MAIL_SENDER, recipients=mail_to_list)
         msg.body = contents
         mail.send(msg)
+        print("Mail has been sent")
     except Exception as error:
-        print(f"SEND MAIL :{error}")
+        print(f'Error_SEND MAIL :{error}')
 
 
 def make_tree(path):

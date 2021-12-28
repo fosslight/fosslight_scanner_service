@@ -149,15 +149,20 @@ def run_scanning():
     pid = request.args.get('pid')
     email = request.args.get('email')
     link = request.args.get('link')
+    admin_token = request.args.get('admin')
 
     if email != "" and email is not None:
         email_list = email.split(",")
     if link != "" and link is not None:
-        logger.warning("RUN >"+str(pid)+",link"+str(link)+"email:"+str(email_list))
-        call_parsing_function.delay(pid, link, email_list)
+        if FL_HUB_TOKEN == admin_token:
+            logger.warning(f"RUN >{pid}, link:{link}, email:{email_list}")
+            call_parsing_function.delay(pid, link, email_list)
+            return make_response("ok", RETURN_OK)
+        else:
+            print("nok > ADMIN TOKEN NOT MATCHED")
     else:
-        return make_response("nok", RETURN_NOK)
-    return make_response("ok", RETURN_OK)
+        print("nok > Link is null")
+    return make_response("nok", RETURN_NOK)
 
 
 @app.route('/status')

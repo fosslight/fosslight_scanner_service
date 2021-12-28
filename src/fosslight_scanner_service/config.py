@@ -28,7 +28,7 @@ class Config(object):
     CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
 
     FL_HUB_TOKEN = "eyJhABCD***"
-    FL_HUB_REGISTER_URL = "http://dev.fosslight.com/api/v1/oss_report_selfcheck"
+    FL_HUB_REGISTER_URL = "https://demo.fosslight.org/api/v1/oss_report_selfcheck"
 
 
 class ProductionConfig(Config):

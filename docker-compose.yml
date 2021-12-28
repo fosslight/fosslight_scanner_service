@@ -1,7 +1,7 @@
 # Copyright (c) 2021 LG Electronics Inc.
 # SPDX-License-Identifier: Apache-2.0
 
-version: "0.1"
+version: "3.5"
 services:
     mail:
       image: mailserver/docker-mailserver:10

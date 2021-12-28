@@ -143,25 +143,41 @@ def call_parsing_function(prj_id, link, email_list=[]):
         return
 
 
-@app.route('/run_fosslight')
+@app.route('/run_fosslight', methods=['GET', 'POST'])
 def run_scanning():
     email_list = []
-    pid = request.args.get('pid')
-    email = request.args.get('email')
-    link = request.args.get('link')
-    admin_token = request.args.get('admin')
-
-    if email != "" and email is not None:
-        email_list = email.split(",")
-    if link != "" and link is not None:
-        if FL_HUB_TOKEN == admin_token:
-            logger.warning(f"RUN >{pid}, link:{link}, email:{email_list}")
-            call_parsing_function.delay(pid, link, email_list)
-            return make_response("ok", RETURN_OK)
+    pid = ""
+    email = ""
+    link = ""
+    admin_token = ""
+    try:
+        if request.method == 'GET':
+            result = request.args
+        elif request.method == 'POST':
+            result = request.form
         else:
-            print("nok > ADMIN TOKEN NOT MATCHED")
-    else:
-        print("nok > Link is null")
+            result = ""
+
+        if result != "":
+            pid = result.get('pid')
+            email = result.get('email')
+            link = result.get('link')
+            admin_token =result.get('admin')
+
+        if email != "" and email is not None:
+            email_list = email.split(",")
+        if link != "" and link is not None:
+            if FL_HUB_TOKEN == admin_token:
+                logger.warning(f"RUN >{pid}, link:{link}, email:{email}")
+                call_parsing_function.delay(pid, link, email_list)
+                return make_response("ok", RETURN_OK)
+            else:
+                logger.warning("nok > ADMIN TOKEN NOT MATCHED")
+        else:
+            logger.warning("nok > Link is null")
+    except Exception as error:
+        logger.error(f"run_fosslight {error}")
+
     return make_response("nok", RETURN_NOK)
 
 

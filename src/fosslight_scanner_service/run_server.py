@@ -150,6 +150,7 @@ def run_scanning():
     email = ""
     link = ""
     admin_token = ""
+    return_msg = ""
     try:
         if request.method == 'GET':
             result = request.args
@@ -172,13 +173,15 @@ def run_scanning():
                 call_parsing_function.delay(pid, link, email_list)
                 return make_response("ok", RETURN_OK)
             else:
-                logger.warning("nok > ADMIN TOKEN NOT MATCHED")
+                return_msg = "nok > ADMIN TOKEN NOT MATCHED"
         else:
-            logger.warning("nok > Link is null")
-    except Exception as error:
-        logger.error(f"run_fosslight {error}")
+            return_msg = "nok > Link is null"
 
-    return make_response("nok", RETURN_NOK)
+    except Exception as error:
+        return_msg = f"Error - run_fosslight: {error}"
+
+    logger.warning(return_msg)
+    return make_response(return_msg, RETURN_NOK)
 
 
 @app.route('/status')

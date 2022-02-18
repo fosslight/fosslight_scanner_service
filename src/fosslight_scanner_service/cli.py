@@ -7,8 +7,8 @@ import os
 import sys
 import logging
 from pathlib import Path
-from fosslight_scanner.fosslight_scanner import run_analysis
-from fosslight_scanner.fosslight_scanner import main as fl_scanner_main
+from fosslight_scanner.common import run_analysis
+from fosslight_scanner.cli import main as fl_scanner_main
 
 logger = logging.getLogger(__name__)
 

@@ -16,6 +16,7 @@ $sudo makemap hash /etc/mail/access < /etc/mail/access
 ```
 $ sudo apt-get install redis-server
 $ redis-server
+$ sudo /etc/init.d/redis-server status
 ```
 
 3. Update variables in src/fosslight_scanner_service/config.py
@@ -23,6 +24,9 @@ $ redis-server
 SERVER_IP = "127.0.0.1"
 SERVER_PORT = 5001
 ROOT = "/home/test"
+MAIL_SERVER = ...
+FL_HUB_TOKEN = ...
+FL_HUB_REGISTER_URL = ...
 ```
 
 ### Setup

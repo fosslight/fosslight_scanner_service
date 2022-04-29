@@ -26,6 +26,8 @@ class Config(object):
 
     CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
     CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+    CELERY_REDIRECT_STDOUTS = False
+    worker_redirect_stdouts = False
 
     FL_HUB_TOKEN = "eyJhABCD***"
     FL_HUB_REGISTER_URL = "https://demo.fosslight.org/api/v1/oss_report_selfcheck"

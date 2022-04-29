@@ -40,7 +40,9 @@ celery.conf.update(app.config)
 def register_report_to_fosslight(prj_id, report_file):
     success = False
     result_str = ""
-    if prj_id != "" and os.path.isfile(report_file):
+    if prj_id == "":
+        result_str = "Can't find project id"
+    elif os.path.isfile(report_file):
         try:
             url = FL_HUB_REGISTER_URL +"?prjId=" + prj_id
 
@@ -60,10 +62,9 @@ def register_report_to_fosslight(prj_id, report_file):
             success = False
             result_str = f'Error_Response of uploading file: {error}'
     else:
-        result_str = "Can't find project id or report file to send."
+        result_str = f"Can't find a report file to send.: {report_file}"
 
     print(result_str)
-
     return success, result_str
 
 

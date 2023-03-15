@@ -54,7 +54,7 @@ def register_report_to_fosslight(prj_id, report_file):
                 'ossReport': (os.path.basename(report_file), open(report_file, 'rb'), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             }
 
-            resp = requests.post(url, headers=headers, files=files)
+            resp = requests.post(url, headers=headers, files=files, verify=False)
             res = resp.json()
             success = res["success"]
             result_str = f'Response of uploading file: {res}'
